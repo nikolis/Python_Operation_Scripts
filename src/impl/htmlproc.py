@@ -56,22 +56,26 @@ def get_ingredient_from_children(children):
     childNum = 1
     measurementUnit =None
     pre_object_description =None
+    post_object_description = None
+    ingredient = None
     quant =-1
     for child in children:
         child = _get_rid_of_backslashes(child.string)        
         if (childNum ==1):
             result = handle_first_child(child)
             quant, measurementUnit, pre_object_description = result[0],result[1],result[2]
+        elif(childNum ==2):
+            ingredient = str(child)
+        elif(childNum == 3):
+            post_object_description = __decode_escape_chars(str(child))
         childNum+=1
-    return (quant,measurementUnit,pre_object_description)
+    return (quant,measurementUnit,pre_object_description, ingredient, post_object_description)
 
-
-def handle_first_child(firstChild):
+def handle_first_child(first_child):
     measurementUnit =None
     furtherDesc =None
     quant =-1
-    
-    ingredientEntry = find_combined_quantity(firstChild)
+    ingredientEntry = find_combined_quantity(first_child)
     quant = ingredientEntry[0]
     if(ingredientEntry[1]==None and ingredientEntry[2]):
         for mo in measurement_units:
@@ -81,6 +85,7 @@ def handle_first_child(firstChild):
                 if (token == mo):
                     measurementUnit=mo
                     furtherDesc = " ".join(descrTokens[0:loopCount] + descrTokens[loopCount+1:])
+                    #print(furtherDesc)
                 loopCount+=1
             if(measurementUnit):
                 furtherDesc = ingredientEntry[2].replace(measurementUnit,"")
@@ -89,13 +94,11 @@ def handle_first_child(firstChild):
     else:
         measurementUnit = ingredientEntry[1]
         furtherDesc = ingredientEntry[2]
+    print(quant,measurementUnit,furtherDesc)
     return (quant,measurementUnit,furtherDesc)
 
-def handle_second_child:
 
- """
-def handle_third_child:
-    """
+
 
 def find_combined_quantity(raw):
     """ Return a tuple that has 3 members the 
@@ -103,7 +106,7 @@ def find_combined_quantity(raw):
     1) Should be a measurement Unit for the quantity
     2) Should have remaining descriptions
     if any of this parts is not found it's place should be None in the tuple"""
-
+    print(raw)
     combinedNumber = 0
     tempContainer = 0
     remainingDescriptions = ['']
@@ -120,12 +123,15 @@ def find_combined_quantity(raw):
                         combinedNumber -= tempContainer 
                         combinedNumber += tempContainer * result[0]
                         multiplier = False ;
-                        if(loopCounter != len(rawArray)):
-                            return (combinedNumber, result[1], " ".join(rawArray[loopCounter+1:]))
-                        return (combinedNumber, result[1], remainingDescriptions)
-                    return (combinedNumber+result[0], result[1], remainingDescriptions)
-                else:
-                    return (result[0], result[1], None)
+
+                        #if(loopCounter != len(rawArray)):
+                            #return (combinedNumber, result[1], " ".join(rawArray[loopCounter+1:]))
+                        #return (combinedNumber, result[1], remainingDescriptions)
+                    #return (combinedNumber+result[0], result[1], remainingDescriptions)
+                combinedNumber = combinedNumber+result[0]
+                remainingDescriptions.append(result[1])
+                #else:
+                    #return (result[0], result[1], None)
             elif(result[0]):
                 tempContainer = result[0]
                 combinedNumber+=result[0]
@@ -137,9 +143,8 @@ def find_combined_quantity(raw):
             else :
                 remainingDescriptions.append(token)
         loopCounter+=1
+    #print(combinedNumber,None, " ".join(remainingDescriptions))
     return (combinedNumber,None, " ".join(remainingDescriptions))   
-
-
 
 
 
@@ -159,12 +164,7 @@ def is_number(token):
                 (int(token[result.start():result.end()]), token[:result.start])
     else : 
         if token in base64encoded_points:
-            if(type(token) != str):
-                token = token.decode('utf-8')
-            else:
-                token = bytes(token,'utf-8')
-                token = token.decode('utf-8')
-            decodedToken = __decode_escape_chars(str(token))
+            decodedToken = __decode_escape_chars(token)
             return (escapeCharsMatcher.get(decodedToken), None)
 
 
@@ -175,8 +175,9 @@ def __encode_escape_chars(string):
     for ch in escapeCharacters:
         index = tempString.find(ch)
         while(index != -1):
-            newString = tempString[:index]+str(base64.b64encode(bytes(tempString[index:index+len(ch)],'utf-8')))+tempString[index+len(ch):]
-            base64encoded_points.add(str(base64.b64encode(bytes(tempString[index:index+len(ch)], 'utf-8'))))
+            encodedBytes =  base64.b64encode(tempString[index:index+len(ch)].encode('utf-8'))
+            newString = tempString[:index]+ encodedBytes.decode('utf-8')+tempString[index+len(ch):]
+            base64encoded_points.add(encodedBytes.decode('utf-8'))
             tempString = newString
             index = tempString.find(ch)
     return tempString
@@ -184,12 +185,20 @@ def __encode_escape_chars(string):
 def __decode_escape_chars(string):
     """This method only decodes base64 encoded strings that exist in base64encoded_points 
     the only reason for that is not to decode any data not encoded by this script"""
-    string = str(string.encode('utf-8'))
-    for ch in base64encoded_points: 
-        index = string.find(ch)
-        if(index != -1 and index == 0 and len(string)==len(ch)  ):
-            newString = base64.b64decode(string[index:index+len(ch)])
-            string = newString
+    repeatFlag = False
+    for ch in base64encoded_points:
+        repeatFlag = True ;
+        while(repeatFlag):
+            ch = str(ch)
+            index = string.find(ch)
+            if(index != -1 and index == 0 and len(string)==len(ch)  ):
+                newString = base64.b64decode(string[index:index+len(ch)]).decode('utf-8')
+                return newString
+            elif(index != -1):
+                string = string[0:index]+base64.b64decode(string[index:index+len(ch)]).decode('utf-8')+ string[index+len(ch):]   
+                repeatFlag = True
+            else :
+                repeatFlag = False 
     return string
 
 
@@ -215,7 +224,7 @@ recipe_urls = ['http://www.bbc.co.uk/food/recipes/aged_sirloin_steak_with_62354'
         'http://www.bbc.co.uk/food/recipes/roastbabychickenwith_91388',
         'http://www.bbc.co.uk/food/recipes/xxxxx_36916']
 
-url = recipe_urls[0];
+url = recipe_urls[1];
 htmlDoc = urlopen(url).read()
 ingredient_tag = _find_ingredients_tag(htmlDoc)
 ingredientList = _list_ingredients(ingredient_tag)
