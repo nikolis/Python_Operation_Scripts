@@ -13,15 +13,15 @@ multiplyer = 'x'
 rangeOperator = '-'
 measurement_units=["small","big","leaves","clove","cloves","oz","tsp","tbsp","kg","fl","ml","bunch","slices","rashers","g","lb","jar"]
 
-def _find_ingredients_tag(htmlDoc):
+def _find_tag(htmlDoc,object_type, class_of_tag):
     """This method is responsible for geting an html Document and finding the div object
     that belongs to the CSS class 'recipe-ingredients'"""
     soup = BeautifulSoup(htmlDoc, 'html.parser')
-    tags = soup.find_all('div')
+    tags = soup.find_all(object_type)
     for tag in tags:
         retTags =[]
         attributes = tag.attrs 
-        if((not attributes is None) and('class' in attributes.keys()) and (tag['class']==['recipe-ingredients'])):
+        if((not attributes is None) and('class' in attributes.keys()) and (tag['class']==[class_of_tag])):
             return tag
 
 def _list_ingredients(ingredientsTag):
@@ -94,7 +94,7 @@ def handle_first_child(first_child):
     else:
         measurementUnit = ingredientEntry[1]
         furtherDesc = ingredientEntry[2]
-    print(quant,measurementUnit,furtherDesc)
+    #print(quant,measurementUnit,furtherDesc)
     return (quant,measurementUnit,furtherDesc)
 
 
@@ -106,7 +106,7 @@ def find_combined_quantity(raw):
     1) Should be a measurement Unit for the quantity
     2) Should have remaining descriptions
     if any of this parts is not found it's place should be None in the tuple"""
-    print(raw)
+    #print(raw)
     combinedNumber = 0
     tempContainer = 0
     remainingDescriptions = ['']
@@ -215,6 +215,7 @@ def _get_rid_of_backslashes(string):
     return string
 
 
+  
 
 
 recipe_urls = ['http://www.bbc.co.uk/food/recipes/aged_sirloin_steak_with_62354',
@@ -224,9 +225,33 @@ recipe_urls = ['http://www.bbc.co.uk/food/recipes/aged_sirloin_steak_with_62354'
         'http://www.bbc.co.uk/food/recipes/roastbabychickenwith_91388',
         'http://www.bbc.co.uk/food/recipes/xxxxx_36916']
 
+def _parse_recipe_method(htmlDoc):
+    recipe_method_tag = _find_tag(htmlDoc,'div','recipe-method-wrapper')
+    soup = BeautifulSoup(str(recipe_method_tag), 'html.parser')
+    tags = soup.find_all('li')
+    method_parts =[]
+    for tag in tags:
+        method_parts.append(tag.text)
+    return method_parts
+
+def _parse_recipe_title(htmlDoc):
+    recipe_title_tag = _find_tag(htmlDoc,'h1','content-title__text')
+    return(recipe_title_tag.text)
+
+
 url = recipe_urls[1];
 htmlDoc = urlopen(url).read()
-ingredient_tag = _find_ingredients_tag(htmlDoc)
+ingredient_tag = _find_tag(htmlDoc,'div','recipe-ingredients')
 ingredientList = _list_ingredients(ingredient_tag)
+method_parts = _parse_recipe_method(htmlDoc)
+title = _parse_recipe_title(htmlDoc)
+
+
+print (title)
+print()
 for entity in ingredientList:
     print(entity," : ",ingredientList.get(entity))
+print("----------------------------------------------->")
+for part in method_parts:
+    print(part)
+
