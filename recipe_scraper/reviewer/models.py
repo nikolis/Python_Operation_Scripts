@@ -1,4 +1,5 @@
 from django.db import models
+import src.impl.htmlproc as htmlproc
 
 class Recipe(models.Model):
     cusine = models.CharField(max_length=50)
@@ -7,6 +8,27 @@ class Recipe(models.Model):
     original_url = models.CharField(max_length=200)
     pub_date =models.DateTimeField('date published')
     approved = models.IntegerField(default=0)
+    
+    @staticmethod
+    def parseResult(result):
+        recipe = Recipe()
+        print(result[0][0])
+        recipe.title = result[0][0]
+        recipe.original_url = result[0][1]
+        return recipe
+
+    @staticmethod
+    def getRecipe(index):
+        result = htmlproc.get_next_recipe()
+        counter = 1
+        for recipe in result:
+            if(counter == int(index)):
+                print("just something random")
+                parsedRecipe =  Recipe.parseResult(recipe)
+                return parsedRecipe
+            counter +=1
+    
+
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=50)

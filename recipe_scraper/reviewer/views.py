@@ -11,6 +11,11 @@ def result(request, recipe_id):
     response = "You're loking at the results of question %s"
     return HttpResponse(response % question_id)
 
+def parse(request, index):
+    recipe=Recipe.getRecipe(index)
+    print(recipe)
+    return render(request, 'reviewer/parse.html', {'recipe': recipe})
+
 def approve(request, recipe_id):
     return HttpResponse("You just approved")
 
