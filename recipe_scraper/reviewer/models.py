@@ -12,9 +12,9 @@ class Recipe(models.Model):
     @staticmethod
     def parseResult(result):
         recipe = Recipe()
-        print(result[0][0])
         recipe.title = result[0][0]
         recipe.original_url = result[0][1]
+        recipe.ingredients = result[0][2]
         return recipe
 
     @staticmethod
@@ -23,7 +23,6 @@ class Recipe(models.Model):
         counter = 1
         for recipe in result:
             if(counter == int(index)):
-                print("just something random")
                 parsedRecipe =  Recipe.parseResult(recipe)
                 return parsedRecipe
             counter +=1

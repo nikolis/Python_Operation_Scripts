@@ -4,8 +4,9 @@ from django.template import loader
 from .models import Recipe
 
 def detail(request, recipe_id):
-    recipe = get_object_or_404(Recipe, pk=recipe_id)
-    return render(request, 'reviewer/detail.html', {'recipe' : recipe})
+   recipe = get_object_or_404(Recipe, pk=recipe_id)
+   print(recipe)
+   return render(request, 'reviewer/detail.html', {'recipe' : recipe})
 
 def result(request, recipe_id):
     response = "You're loking at the results of question %s"
@@ -13,11 +14,13 @@ def result(request, recipe_id):
 
 def parse(request, index):
     recipe=Recipe.getRecipe(index)
-    print(recipe)
+    print(recipe.ingredients)
     return render(request, 'reviewer/parse.html', {'recipe': recipe})
 
-def approve(request, recipe_id):
-    return HttpResponse("You just approved")
+def validate(request, recipe_title):
+	return HttpResponse("You just approved")
+
+
 
 def index(request):
     latest_recipe_list = Recipe.objects.order_by('-pub_date')[:5]
