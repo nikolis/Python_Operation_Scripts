@@ -1,4 +1,6 @@
 from django.db import models
+from django.forms import ModelForm
+
 import src.impl.htmlproc as htmlproc
 
 class Recipe(models.Model):
@@ -27,8 +29,6 @@ class Recipe(models.Model):
                 return parsedRecipe
             counter +=1
     
-
-
 class Ingredient(models.Model):
     name = models.CharField(max_length=50)
 
@@ -40,6 +40,27 @@ class IngredientEntry(models.Model):
 
 class Step(models.Model):
     position = models.IntegerField(default=0)
-    test = models.CharField(max_length=10000)
+    text = models.CharField(max_length=10000)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+
+class RecipeForm(ModelForm):
+    class Meta:
+        model = Recipe
+        fields = ['title', 'cusine', 'approved']
+
+class IngredientEntryForm(ModelForm):
+    class Meta:
+        model = IngredientEntry
+        fields = ['ingredient', 'quantity','measurement_unit','recipe']
+
+class IngredientForm(ModelForm):
+    class Meta:
+        model = Ingredient
+        fields = ['name']
+        
+class StepForm(ModelForm):
+    class Meta:
+        model = Step
+        fields = ['position', 'text','recipe'] 
+
 

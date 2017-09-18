@@ -1,7 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
-from .models import Recipe
+from .models import Recipe,IngredientEntry
+from .models import RecipeForm, IngredientEntryForm
+from django.forms import  modelformset_factory
+
 
 def detail(request, recipe_id):
    recipe = get_object_or_404(Recipe, pk=recipe_id)
@@ -14,11 +17,13 @@ def result(request, recipe_id):
 
 def parse(request, index):
     recipe=Recipe.getRecipe(index)
-    print(recipe.ingredients)
-    return render(request, 'reviewer/parse.html', {'recipe': recipe})
+    recipe.title="a title"
+    ingr_form_set = modelformset_factory(IngredientEntry, fields=('quantity','measurement_unit','ingredient'), initial=recipe.ingredients)
+    recipeForm = RecipeForm(request.POST, instance=recipe)
+    return render(request, 'reviewer/parse.html', {'form': recipeForm, "formset":ingr_form_set})
 
 def validate(request, recipe_title):
-	return HttpResponse("You just approved")
+    return HttpResponse("You just approved")
 
 
 

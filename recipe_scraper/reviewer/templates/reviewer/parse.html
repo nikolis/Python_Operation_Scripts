@@ -1,24 +1,7 @@
-<h1> {{ recipe.title}}  </h1>
-
-{% if eror_message  %}
-	<p> <strong> {{ error_message }}</strong> </p> 
-{% endif %}
-
-<form action="{% url 'reviewer:validate'  %}" method ="post">
-{% csrf_token %}
-
-	{% for key, ingredientEntrySet in recipe.ingredients.items %}
-		<h3 > {{key}} </h3>
-		{% for entry in ingredientEntrySet %}
-			{% for part in entry %}
-				<label for="part{{forloop.counter}}">{{ part }}</label>
-				<input type="text" name="part{{ forloop.counter }}" id="ingredientEntry{{ forloop.counter}}" value= "{{part }}">
-				</input>	
-			{% endfor%}
-			<br/>
-		{% endfor %}
-	{% endfor %}
-<br/>
-
-<input type="submit" value="Validate"/>
+<form action="{% url 'reviewer:validate'  %}"  method="post">
+	{% csrf_token %}
+	{{ form }}
+	{{ formset }}
+	<input type="submit" value="Submit" />
 </form>
+
