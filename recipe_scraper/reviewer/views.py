@@ -17,15 +17,11 @@ def result(request, recipe_id):
 
 def parse(request, index):
     recipe=Recipe.getRecipe(index)
-    recipe.title="a title"
-    ingr_form_set = modelformset_factory(IngredientEntry, fields=('quantity','measurement_unit','ingredient'), initial=recipe.ingredients)
-    recipeForm = RecipeForm(request.POST, instance=recipe)
-    return render(request, 'reviewer/parse.html', {'form': recipeForm, "formset":ingr_form_set})
+    recipeForm = RecipeForm(instance=recipe)
+    return render(request, 'reviewer/parse.html', {'form': recipeForm})
 
 def validate(request, recipe_title):
     return HttpResponse("You just approved")
-
-
 
 def index(request):
     latest_recipe_list = Recipe.objects.order_by('-pub_date')[:5]

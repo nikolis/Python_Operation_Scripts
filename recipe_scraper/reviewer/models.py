@@ -16,7 +16,7 @@ class Recipe(models.Model):
         recipe = Recipe()
         recipe.title = result[0][0]
         recipe.original_url = result[0][1]
-        recipe.ingredients = result[0][2]
+        recipe.ingredientSet_list = result[0][2]
         return recipe
 
     @staticmethod
@@ -32,9 +32,13 @@ class Recipe(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(max_length=50)
 
+class IngredientSet(models.Model):
+    title = models.CharField(max_length=50)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+
 class IngredientEntry(models.Model):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    ingredient_set = models.ForeignKey(IngredientSet, on_delete=models.CASCADE)
     quantity = models.DecimalField(max_digits=15, decimal_places=4)
     measurement_unit = models.CharField(max_length=200)
 
@@ -42,6 +46,11 @@ class Step(models.Model):
     position = models.IntegerField(default=0)
     text = models.CharField(max_length=10000)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+
+class IngredientSetForm(ModelForm):
+    class Meta:
+        model = IngredientSet
+        fields= ['title','recipe']
 
 class RecipeForm(ModelForm):
     class Meta:
@@ -51,7 +60,7 @@ class RecipeForm(ModelForm):
 class IngredientEntryForm(ModelForm):
     class Meta:
         model = IngredientEntry
-        fields = ['ingredient', 'quantity','measurement_unit','recipe']
+        fields = ['ingredient', 'quantity','measurement_unit']
 
 class IngredientForm(ModelForm):
     class Meta:

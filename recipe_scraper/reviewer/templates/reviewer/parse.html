@@ -1,7 +1,6 @@
 <form action="{% url 'reviewer:validate'  %}"  method="post">
 	{% csrf_token %}
 	{{ form }}
-	{{ formset }}
 	<input type="submit" value="Submit" />
 </form>
 
