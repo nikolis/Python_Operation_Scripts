@@ -1,6 +1,37 @@
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+  <title>{{recipe.title}} </title>
+</head>
+
+<body>
+<div class="input-group">
 <form action="{% url 'reviewer:validate'  %}"  method="post">
+  
+     <div><h1><a>{{recipe.title}}<a/> </h1></div>
     {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit" />
+    <h3><a href="{{recipe.original_url}}">Original URL</a></h3>
+    <h3>{{recipe.author}}</h3>
+    <h3>{{recipe.prep_time}}</h3>
+    <h3>{{recipe.cooking_time}}</h3>
+    <h3>{{recipe.servings}}</h3>
+  <table class="table">
+  
+      <tbody>
+        <th> Part </th><th> Quantity </th><th> Measurement Unit </th><th> Pre Comment </th><th> Name </th><th> Post Comment </th>
+      {% for form in forms %}
+      <tr> <td> {{form.part}}</td> <td> {{form.quantity}}</td> <td>{{form.measurement_unit}}</td> <td>{{form.pre_comment}}</td> <td>{{form.name}}</td> <td>{{ form.post_comment}}</td> </tr> 
+      {% endfor %}
+      </tbody>
+    
+  </table>
+
+  <br/>
+  
+  <h3> is recipe approved = {{recipe.approved}}</h3>
+  <br/>
+  <br/>
+  <input type="submit" value="Submit" />
 </form>
 
+</div>
+</body>
