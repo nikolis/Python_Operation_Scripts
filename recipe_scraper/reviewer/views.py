@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
-from .models import Recipe
+from .models import Recipe,Ingredient
+from .models import RecipeForm, IngredientForm
+from django.forms import  modelformset_factory, inlineformset_factory
+
 
 def detail(request, recipe_id):
    recipe = get_object_or_404(Recipe, pk=recipe_id)
-   print(recipe)
    return render(request, 'reviewer/detail.html', {'recipe' : recipe})
 
 def result(request, recipe_id):
@@ -14,18 +16,17 @@ def result(request, recipe_id):
 
 def parse(request, index):
     recipe=Recipe.getRecipe(index)
-    print(recipe.ingredients)
-    return render(request, 'reviewer/parse.html', {'recipe': recipe})
+    FormSet = inlineformset_factory(Recipe, Ingredient, form=IngredientForm, extra=0)
+    formSet = FormSet(instance = recipe)
+    return render(request, 'reviewer/parse.html', {'forms': formSet,'recipe':recipe})
 
 def validate(request, recipe_title):
-	return HttpResponse("You just approved")
-
-
+    return HttpResponse("You just approved")
 
 def index(request):
     latest_recipe_list = Recipe.objects.order_by('-pub_date')[:5]
     context= {
-        'latest_recipe_list': latest_recipe_list,        
+        'latest_recipe_list': latest_recipe_list, 
     }
     return render(request, 'polls/index.html', context)
      

@@ -1,24 +1,37 @@
-<h1> {{ recipe.title}}  </h1>
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+  <title>{{recipe.title}} </title>
+</head>
 
-{% if eror_message  %}
-	<p> <strong> {{ error_message }}</strong> </p> 
-{% endif %}
+<body>
+<div class="input-group">
+<form action="{% url 'reviewer:validate'  %}"  method="post">
+  
+     <div><h1><a>{{recipe.title}}<a/> </h1></div>
+    {% csrf_token %}
+    <h3><a href="{{recipe.original_url}}">Original URL</a></h3>
+    <h3>{{recipe.author}}</h3>
+    <h3>{{recipe.prep_time}}</h3>
+    <h3>{{recipe.cooking_time}}</h3>
+    <h3>{{recipe.servings}}</h3>
+  <table class="table">
+  
+      <tbody>
+        <th> Part </th><th> Quantity </th><th> Measurement Unit </th><th> Pre Comment </th><th> Name </th><th> Post Comment </th>
+      {% for form in forms %}
+      <tr> <td> {{form.part}}</td> <td> {{form.quantity}}</td> <td>{{form.measurement_unit}}</td> <td>{{form.pre_comment}}</td> <td>{{form.name}}</td> <td>{{ form.post_comment}}</td> </tr> 
+      {% endfor %}
+      </tbody>
+    
+  </table>
 
-<form action="{% url 'reviewer:validate'  %}" method ="post">
-{% csrf_token %}
-
-	{% for key, ingredientEntrySet in recipe.ingredients.items %}
-		<h3 > {{key}} </h3>
-		{% for entry in ingredientEntrySet %}
-			{% for part in entry %}
-				<label for="part{{forloop.counter}}">{{ part }}</label>
-				<input type="text" name="part{{ forloop.counter }}" id="ingredientEntry{{ forloop.counter}}" value= "{{part }}">
-				</input>	
-			{% endfor%}
-			<br/>
-		{% endfor %}
-	{% endfor %}
-<br/>
-
-<input type="submit" value="Validate"/>
+  <br/>
+  
+  <h3> is recipe approved = {{recipe.approved}}</h3>
+  <br/>
+  <br/>
+  <input type="submit" value="Submit" />
 </form>
+
+</div>
+</body>

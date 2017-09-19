@@ -240,33 +240,17 @@ def _parse_recipe_title(htmlDoc):
 
 
 def get_next_recipe():
-	recipeList = []
-	for recipe_url in recipe_urls:
-		htmlDoc = urlopen(recipe_url).read()
-		ingredient_tag = _find_tag(htmlDoc, 'div','recipe-ingredients')
-		ingredientList = _list_ingredients(ingredient_tag)
-		method_parts = _parse_recipe_method(htmlDoc)
-		title = _parse_recipe_title(htmlDoc)
-		recipeList.append((title, recipe_url, ingredientList, method_parts))
-		yield recipeList
-"""
-url = recipe_urls[1];
-htmlDoc = urlopen(url).read()
-ingredient_tag = _find_tag(htmlDoc,'div','recipe-ingredients')
-ingredientList = _list_ingredients(ingredient_tag)
-method_parts = _parse_recipe_method(htmlDoc)
-title = _parse_recipe_title(htmlDoc)
-
-
-print (title)
-for entity in ingredientList:
-    print(entity," : ",ingredientList.get(entity))
-print("----------------------------------------------->")
-for part in method_parts:
-    print(part)
-"""
-"""
-result = get_next_recipe()
-for recipe in result:
-	print(recipe)
-"""
+    recipeList = []
+    for recipe_url in recipe_urls:
+        htmlDoc = urlopen(recipe_url).read()
+        ingredient_tag = _find_tag(htmlDoc, 'div','recipe-ingredients')
+        prep_time = _find_tag(htmlDoc,'p','recipe-metadata__prep-time')
+        cooking_time = _find_tag(htmlDoc,'p','recipe-metadata__cook-time')
+        servings = _find_tag(htmlDoc,'p','recipe-metadata__serving')
+        author = _find_tag(htmlDoc,'a','chef__link')
+        print(author.text)
+        ingredientList = _list_ingredients(ingredient_tag)
+        method_parts = _parse_recipe_method(htmlDoc)
+        title = _parse_recipe_title(htmlDoc)
+        recipeList.append((title, recipe_url, ingredientList, method_parts,prep_time.text, cooking_time.text,servings.text, author.text))
+        yield recipeList
