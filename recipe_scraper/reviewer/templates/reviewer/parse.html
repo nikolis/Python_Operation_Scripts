@@ -5,9 +5,11 @@
 
 <body>
 <div class="input-group">
-<form action="{% url 'reviewer:validate'  %}"  method="post">
-  
-     <div><h1><a>{{recipe.title}}<a/> </h1></div>
+     
+   <form recipe_id={{recipe.id}} action="/reviewer/{{recipe.id}}/validate/"  method="post">
+   {{ formSet.management_form }} 
+   
+    <div><h1><a>{{recipe.title}}<a/> </h1></div>
     {% csrf_token %}
     <h3><a href="{{recipe.original_url}}">Original URL</a></h3>
     <h3>{{recipe.author}}</h3>
@@ -18,7 +20,8 @@
   
       <tbody>
         <th> Part </th><th> Quantity </th><th> Measurement Unit </th><th> Pre Comment </th><th> Name </th><th> Post Comment </th>
-      {% for form in forms %}
+      {% for form in formSet %}
+       {{ form.id }}
       <tr> <td> {{form.part}}</td> <td> {{form.quantity}}</td> <td>{{form.measurement_unit}}</td> <td>{{form.pre_comment}}</td> <td>{{form.name}}</td> <td>{{ form.post_comment}}</td> </tr> 
       {% endfor %}
       </tbody>
@@ -30,7 +33,8 @@
   <h3> is recipe approved = {{recipe.approved}}</h3>
   <br/>
   <br/>
-  <input type="submit" value="Submit" />
+
+<input type="submit" value="Submit" />
 </form>
 
 </div>

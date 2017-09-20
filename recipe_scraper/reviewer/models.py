@@ -1,8 +1,10 @@
 from django.db import models
 from django.forms import ModelForm
 from  django.forms.widgets import TextInput
-
+from django import forms
 import src.impl.htmlproc as htmlproc
+
+index =1 
 
 class Recipe(models.Model):
     cusine = models.CharField(max_length=50, null=True)
@@ -17,36 +19,47 @@ class Recipe(models.Model):
     steps = models.CharField(max_length=10000,null = True)
 
     @staticmethod
-    def getRecipe(index):
-        result = htmlproc.get_next_recipe()
+    def getRecipe(recipe_url):
+        result = htmlproc.get_next_recipe(recipe_url)
         counter = 1
+        return parseResult(result[0])
+
+
+""" 
         for recipe in result:
+            global index
             if(counter == int(index)):
                 parsedRecipe =  parseResult(recipe)
+                index += 1
                 return parsedRecipe
         counter +=1
+"""
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=50)
     part = models.CharField(max_length=100) 
-    quantity = models.DecimalField(max_digits=15, decimal_places=4, null=True)
-    measurement_unit = models.CharField(max_length=200, null=True)
-    pre_comment = models.CharField(max_length=50, null=True)
-    post_comment = models.CharField(max_length=50, null=True)
+    quantity = models.DecimalField(max_digits=15, decimal_places=4, null=True, blank=True)
+    measurement_unit = models.CharField(max_length=200, null=True, blank=True)
+    measurement_unit = models.CharField(max_length=200, null=True, blank=True)
+    pre_comment = models.CharField(max_length=50, null=True, blank=True)
+    post_comment = models.CharField(max_length=50, null=True, blank=True)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
 
 def parseResult(result):
     recipe = Recipe()
-    recipe.title = result[0][0]
-    recipe.original_url = result[0][1]
-    recipe.steps = result[0][3]
-    recipe.prep_time = result[0][4]
-    recipe.cooking_time = result[0][5]
-    recipe.servings = result[0][6]
-    recipe.author = result[0][7]
+    recipe.title = result[0]
+    print("title")
+    print(result)
+    recipe.original_url = result[1]
+    recipe.steps = result[3]
+    recipe.prep_time = result[4]
+    recipe.cooking_time = result[5]
+    recipe.servings = result[6]
+    recipe.author = result[7]
     recipe.save()
-    for part in result[0][2]:
-        for member in result[0][2][part]:
+    print(recipe.id)
+    for part in result[2]:
+        for member in result[2][part]:
             ingredient = Ingredient() 
             ingredient.name=member[3]
             ingredient.part=part
@@ -79,3 +92,5 @@ class StepForm(ModelForm):
         model = Step
         fields = ['position', 'text','recipe'] 
 
+class ScrapeForm(forms.Form):
+    scrape_url = forms.CharField(label="Recipe URL To Scrape", max_length=100)
