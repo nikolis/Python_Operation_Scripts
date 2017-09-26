@@ -1,8 +1,0 @@
-<h1>{{ recipe.title}}</h1>
-	<ul> 
-	{%  for ingredient in recipe.ingredient_set.all %}
-		<li> {{ingredient.quantity}} </li>	
-		<li> {{ingredient.measurement_unit}} </li>
-		<li> {{ingredient.ingredient.name}} </li>
-	</ul>
-	{% endfor %}
