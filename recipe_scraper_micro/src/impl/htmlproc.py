@@ -89,52 +89,51 @@ def find_combined_quantity(raw):
     1) Should be a measurement Unit for the quantity
     2) Should have remaining descriptions
     if any of this parts is not found it's place should be None in the tuple"""
+    print("raw content follows")
     print(raw)
-    combinedNumber = 0
-    tempContainer = 0
-    remainingDescriptions = ['']
+    combined_number = 0
+    temp_container = 0
+    remaining_description = ['']
     multiplier = False ;
     nrange = False ;
-    loopCounter =0
-    rawArray = raw.split(" ")
-    for token in rawArray:
+    loop_counter =0
+    measurement_unit = None
+    raw_array = raw.split(" ")
+    for token in raw_array:
         result = is_number(token)
-        if(result):
-            if(result[0] and result[1]):
-                if combinedNumber != 0:
-                    if multiplier and tempContainer != 0:
-                        combinedNumber -= tempContainer 
-                        combinedNumber += tempContainer * result[0]
-                        multiplier = False ;
-
-                        #if(loopCounter != len(rawArray)):
-                            #return (combinedNumber, result[1], " ".join(rawArray[loopCounter+1:]))
-                        #return (combinedNumber, result[1], remainingDescriptions)
-                    #return (combinedNumber+result[0], result[1], remainingDescriptions)
-                combinedNumber = combinedNumber+result[0]
-                remainingDescriptions.append(result[1])
-                #else:
-                    #return (result[0], result[1], None)
-            elif(result[0]):
-                tempContainer = result[0]
-                combinedNumber+=result[0]
-        else :
-            if token == "x" or token == "*" or token =="X":
+        # if result contains number
+        if result:
+            # if result contains number and measurement unit
+            if result[0] and result[1]:
+                measurement_unit = result[1]
+                if combined_number != 0:
+                    if multiplier and temp_container != 0:
+                        combined_number -= temp_container
+                        combined_number += temp_container * result[0]
+                        multiplier = False
+                        combined_number = combined_number
+            elif result[0]:
+                temp_container = result[0]
+                combined_number += result[0]
+        else:
+            if token == "x" or token == "*" or token == "X":
                 multiplier = True
             elif token == "-":
                 nrange = True
-            else :
-                remainingDescriptions.append(token)
-        loopCounter+=1
-    return (combinedNumber,None, " ".join(remainingDescriptions))   
+            elif token in measurement_units:
+                measurement_unit = token
+            else:
+                remaining_description.append(token)
+                loop_counter += 1
+    return combined_number, measurement_unit, " ".join(remaining_description).lstrip()
 
 
 recipe_urls = ['http://www.bbc.co.uk/food/recipes/aged_sirloin_steak_with_62354',
-        'http://www.bbc.co.uk/food/recipes/sirloin_steak_with_new_91595',
-        'http://www.bbc.co.uk/food/recipes/roast_chicken_thigh_41789',
-        'http://www.bbc.co.uk/food/recipes/crown_of_chicken_with_00717',
-        'http://www.bbc.co.uk/food/recipes/roastbabychickenwith_91388',
-        'http://www.bbc.co.uk/food/recipes/xxxxx_36916']
+               'http://www.bbc.co.uk/food/recipes/sirloin_steak_with_new_91595',
+               'http://www.bbc.co.uk/food/recipes/roast_chicken_thigh_41789',
+               'http://www.bbc.co.uk/food/recipes/crown_of_chicken_with_00717',
+               'http://www.bbc.co.uk/food/recipes/roastbabychickenwith_91388',
+               'http://www.bbc.co.uk/food/recipes/xxxxx_36916']
 
 class Recipe:
     def __init__(self, title=None, original_url=None, author=None, prep_time=None, cooking_time=None, servings=None):
@@ -146,9 +145,9 @@ class Recipe:
         self.cooking_time = cooking_time
         self.serving = servings
 
-
     def reprJSON(self):
         return dict(title=self.title, ingredientEntrySets=self.ingredientEntrySets)
+
 
 class IngredientEntrySet:
     def __init__(self, title):
@@ -157,6 +156,7 @@ class IngredientEntrySet:
     
     def reprJSON(self):
         return dict(title=self.title, ingredientEntries=self.ingredientEntries)
+
 
 class IngredientEntry:
     def __init__(self, quantity, measurement_unit, pre_comment, name, post_comment):
@@ -168,6 +168,7 @@ class IngredientEntry:
 
     def reprJSON(self):
         return dict(quantity=self.quantity, measurementUnit=self.measurementUnit, preComment=self.preComment, name=self.name, postComment=self.postComment)
+
 
 def get_next_recipe():
     recipe_url = recipe_urls[0]
