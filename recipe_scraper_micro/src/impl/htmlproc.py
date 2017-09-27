@@ -55,6 +55,9 @@ def get_ingredient_from_children(children):
         elif(childNum == 3):
             post_object_description = decode_escape_chars(str(child))
         childNum+=1
+    if not  post_object_description is None:
+        print(post_object_description)
+        post_object_description = post_object_description.lstrip(', ')
     return (quant,measurementUnit,pre_object_description, ingredient, post_object_description)
 
 def handle_first_child(first_child):
@@ -89,8 +92,8 @@ def find_combined_quantity(raw):
     1) Should be a measurement Unit for the quantity
     2) Should have remaining descriptions
     if any of this parts is not found it's place should be None in the tuple"""
-    print("raw content follows")
-    print(raw)
+    # print("raw content follows")
+    # print(raw)
     combined_number = 0
     temp_container = 0
     remaining_description = ['']
