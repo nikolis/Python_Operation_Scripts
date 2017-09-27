@@ -1,4 +1,4 @@
-#!bin/python3
+#!flask/bin/python3
 from flask import Flask, jsonify
 import src.impl.htmlproc as htmlproc
 from src.impl.htmlproc import Recipe, IngredientEntry, IngredientEntrySet
