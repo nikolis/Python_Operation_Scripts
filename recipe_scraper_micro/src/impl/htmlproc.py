@@ -47,15 +47,17 @@ def get_ingredient_from_children(children):
     quant =-1
     for child in children:
         child = get_rid_of_backslashes(child.string)        
-        if (childNum ==1):
+        if childNum == 1:
             result = handle_first_child(child)
             quant, measurementUnit, pre_object_description = result[0],result[1],result[2]
         elif(childNum ==2):
             ingredient = str(child)
         elif(childNum == 3):
             post_object_description = decode_escape_chars(str(child))
-        childNum+=1
-    return (quant,measurementUnit,pre_object_description, ingredient, post_object_description)
+        childNum += 1
+        if post_object_description is not None:
+            post_object_description = post_object_description.lstrip(' ,')
+    return quant, measurementUnit, pre_object_description, ingredient, post_object_description
 
 def handle_first_child(first_child):
     measurementUnit =None
