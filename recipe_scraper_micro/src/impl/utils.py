@@ -14,18 +14,19 @@ def is_number(token):
     is speculated to be the measurement Unit if No digit is detected in the string
     then only None is Returned and not a Tuple"""
     return_result = [None, None]
+    token = token.split('/')[0]
     result = re.match(r'\d+', token)
     if result:
         # result matched from start to end
         if result.start() == 0 and result.end() == len(token):
-            return_result[0]=int(token)
+            return_result[0] = int(token)
         else:
             if result.start() == 0:
                 return_result[0] = int(token[result.start():result.end()])
                 return_result[1] = token[result.end():]
             elif result.start() > 0:
                 (int(token[result.start():result.end()]), token[:result.start])
-    else : 
+    else:
         if token in base64encoded_points:
             decoded_token = decode_escape_chars(token)
             return_result[0] = escapeCharsMatcher.get(decoded_token)

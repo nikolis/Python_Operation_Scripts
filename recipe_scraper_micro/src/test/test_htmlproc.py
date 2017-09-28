@@ -15,6 +15,13 @@ def test_find_combined_quantity_number_mo_comment_1():
     assert(result[2] == 'chopped')
 
 
+def test_find_combined_quantity_number_mo_comment_2():
+    result = find_combined_quantity('400g fresh')
+    assert (result[0] == 400)
+    assert (result[1] == 'g')
+    assert (result[2] == 'fresh')
+
+
 def test_get_recipe_from_url():
     url = "http://www.bbc.co.uk/food/recipes/aged_sirloin_steak_with_62354"
     recipe = get_recipe_from_url(url)
@@ -31,8 +38,6 @@ def test_get_recipe_from_url():
     assert (ingredient_list[2].measurementUnit == 'g')
     assert (ingredient_list[2].postComment.strip(', ') == 'steaks')
     assert (ingredient_list[2].preComment.strip(', ') == 'aged')
-
-
 
 
 

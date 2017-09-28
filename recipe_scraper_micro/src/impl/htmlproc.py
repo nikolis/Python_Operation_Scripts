@@ -10,11 +10,11 @@ rangeOperator = '-'
 measurement_units=["small","big","leaves","clove","cloves","oz","tsp","tbsp","kg","fl","ml","bunch","slices","rashers","g","lb","jar"]
 
 
-def list_ingredients(ingredientsTag):
+def list_ingredients(ingredients_tag):
     """This method gets as a parameter the complete Div object that found to belong 
     in the 'recipe-ingredients' class"""
     recipe_ingredients = {}
-    string_ingredients_tag = str(ingredientsTag)
+    string_ingredients_tag = str(ingredients_tag)
     soap_temp = BeautifulSoup(string_ingredients_tag, 'html.parser')
     header_tags = soap_temp.find_all(re.compile('h\d'))
     list_tags = soap_temp.find_all("ul")
@@ -38,6 +38,7 @@ def extract_ingredients_from_list(u_list):
         ingredient_entry = get_ingredient_from_children(children)
         ingredient_entries.append(ingredient_entry)
     return ingredient_entries
+
 
 def get_ingredient_from_children(children):
     childNum = 1
@@ -94,11 +95,12 @@ def find_combined_quantity(raw):
     combined_number = 0
     temp_container = 0
     remaining_description = ['']
-    multiplier = False ;
-    nrange = False ;
+    multiplier = False
+    nrange = False
     loop_counter =0
     measurement_unit = None
     raw_array = raw.split(" ")
+    print(raw)
     for token in raw_array:
         result = is_number(token)
         # if result contains number
@@ -112,6 +114,8 @@ def find_combined_quantity(raw):
                         combined_number += temp_container * result[0]
                         multiplier = False
                         combined_number = combined_number
+                else:
+                    combined_number = result[0]
             elif result[0]:
                 temp_container = result[0]
                 combined_number += result[0]
@@ -192,4 +196,4 @@ def get_recipe_from_url(recipe_url):
 
 
 def get_next():
-    return get_recipe_from_url(recipe_urls[0])
+    return get_recipe_from_url(recipe_urls[4])
