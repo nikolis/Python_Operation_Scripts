@@ -13,7 +13,6 @@ def is_number(token):
     in the token or the tuple containing a number and a string that remained which
     is speculated to be the measurement Unit if No digit is detected in the string
     then only None is Returned and not a Tuple"""
-
     return_result = [None, None]
     result = re.match(r'\d+', token)
     if result:
@@ -92,7 +91,7 @@ def find_tag(html_doc,object_type, class_of_tag):
     tags = soup.find_all(object_type)
     for tag in tags:
         attributes = tag.attrs
-        if((not attributes is None) and('class' in attributes.keys()) and (tag['class']==[class_of_tag])):
+        if (not attributes is None) and('class' in attributes.keys()) and (tag['class']==[class_of_tag]):
             return tag
 
 

@@ -27,11 +27,12 @@ app = Flask(__name__)
 CORS(app)
 
 @rest_server.route('/')
-@cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
+@cross_origin(origin='localhost', headers=['Content- Type','Authorization'])
 def index():
     recipe = Recipe()
-    recipe =  htmlproc.get_next_recipe()
+    recipe =  htmlproc.get_next()
     return json.dumps(recipe.reprJSON(), cls=ComplexEncoder)
+
 
 if __name__ =='__main__':
     rest_server.run(debug=True)
