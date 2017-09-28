@@ -55,9 +55,6 @@ def get_ingredient_from_children(children):
         elif(childNum == 3):
             post_object_description = decode_escape_chars(str(child))
         childNum+=1
-    if not  post_object_description is None:
-        print(post_object_description)
-        post_object_description = post_object_description.lstrip(', ')
     return (quant,measurementUnit,pre_object_description, ingredient, post_object_description)
 
 def handle_first_child(first_child):
@@ -92,8 +89,8 @@ def find_combined_quantity(raw):
     1) Should be a measurement Unit for the quantity
     2) Should have remaining descriptions
     if any of this parts is not found it's place should be None in the tuple"""
-    # print("raw content follows")
-    # print(raw)
+    print("raw content follows")
+    print(raw)
     combined_number = 0
     temp_container = 0
     remaining_description = ['']
@@ -176,20 +173,20 @@ class IngredientEntry:
 def get_next_recipe():
     recipe_url = recipe_urls[0]
     recipe_list = []
-    htmlDoc = urlopen(recipe_url).read()
-    ingredient_tag = find_tag(htmlDoc, 'div','recipe-ingredients')
-    prep_time = find_tag(htmlDoc,'p','recipe-metadata__prep-time')
-    cooking_time = find_tag(htmlDoc,'p','recipe-metadata__cook-time')
-    servings = find_tag(htmlDoc,'p','recipe-metadata__serving')
-    author = find_tag(htmlDoc,'a','chef__link')
-    ingredientList = list_ingredients(ingredient_tag)
-    title = parse_recipe_title(htmlDoc)
-    recipe = Recipe(title,recipe_url, author, prep_time, cooking_time, servings)
-    for name in ingredientList:
-        ingredientEntrySet = IngredientEntrySet(name)
-        for entry in ingredientList[name]:
-            ingredientEntry = IngredientEntry(entry[0],entry[1],entry[2],entry[3],entry[4])
-            ingredientEntrySet.ingredientEntries.append(ingredientEntry)
-        recipe.ingredientEntrySets.append(ingredientEntrySet)
-    method_parts = parse_recipe_method(htmlDoc)
+    html_document = urlopen(recipe_url).read()
+    ingredient_tag = find_tag(html_document, 'div', 'recipe-ingredients')
+    prep_time = find_tag(html_document, 'p', 'recipe-metadata__prep-time')
+    cooking_time = find_tag(html_document, 'p', 'recipe-metadata__cook-time')
+    servings = find_tag(html_document, 'p', 'recipe-metadata__serving')
+    author = find_tag(html_document, 'a', 'chef__link')
+    ingredient_list = list_ingredients(ingredient_tag)
+    title = parse_recipe_title(html_document)
+    recipe = Recipe(title, recipe_url, author, prep_time, cooking_time, servings)
+    for name in ingredient_list:
+        ingredient_entry_set = IngredientEntrySet(name)
+        for entry in ingredient_list[name]:
+            ingredient_entry = IngredientEntry(entry[0], entry[1], entry[2], entry[3], entry[4])
+            ingredient_entry_set.ingredientEntries.append(ingredient_entry)
+        recipe.ingredientEntrySets.append(ingredient_entry_set)
+    method_parts = parse_recipe_method(html_document)
     return recipe 
